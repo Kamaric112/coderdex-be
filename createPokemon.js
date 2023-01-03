@@ -11,7 +11,9 @@ const createPokemon = async () => {
         types: data.Type2
           ? [data.Type1.toLowerCase(), data.Type2.toLowerCase()]
           : [data.Type1.toLowerCase()],
-        url: `http://localhost:8000/pokemon/${index + 1}.png`,
+        url: `https://coderdex-be-production-1b1c.up.railway.app/pokemon/${
+          index + 1
+        }.png`,
       };
     } else return;
   });
