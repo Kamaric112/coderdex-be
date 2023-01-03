@@ -3,10 +3,22 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 
+router.all("/", function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
+
+router.all("/:pokemonId", function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
+
 router.get("/", (req, res, next) => {
   //input validation
 
-  const allowedFilter = ["name", "type", "page", "limit"];
+  const allowedFilter = ["search", "type", "page", "limit"];
   try {
     let { page, limit, ...filterQuery } = req.query;
     page = parseInt(page) || 1;
@@ -31,8 +43,8 @@ router.get("/", (req, res, next) => {
     db = JSON.parse(db);
     const { pokemons } = db;
     // console.log(pokemons[0].types);
-    // console.log(filterQuery.type);
-    // console.log(filterKeys);
+    console.log(filterQuery);
+    console.log(filterKeys);
     //Filter data by title
     let result = [];
 
@@ -46,6 +58,14 @@ router.get("/", (req, res, next) => {
               )
             : pokemons.filter((pokemon) =>
                 pokemon.types.includes(filterQuery.type)
+              );
+        } else if (condition == "search") {
+          result = result.length
+            ? result.filter((pokemon) =>
+                pokemon.name.includes(filterQuery.search)
+              )
+            : pokemons.filter((pokemon) =>
+                pokemon.name.includes(filterQuery.search)
               );
         } else {
           result = result.length
@@ -80,7 +100,7 @@ router.get("/:pokemonId", (req, res, next) => {
     const { pokemons } = db;
     let result = [];
     const getPokemon = (id) => {
-      return pokemons.filter((pokemon) => pokemon.id == id);
+      return pokemons.find((pokemon) => pokemon.id == id); // return object instead of array (filter - easier for FE)
     };
 
     if (pokemonId > pokemons.length || pokemonId < 1) {
